@@ -1,0 +1,43 @@
+shutup-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: shutup-deploy
+  name: shutup-deploy-service
+spec:
+  ports:
+  - port: 5000 (doesnt matter what you change this to, 80 or 5000 because it is a NodePort??)
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: shutup-deploy
+  type: NodePort
+status:
+  loadBalancer: {}
+----------------------------------
+cat shut-deploy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: shutup-deploy
+  name: shutup-deploy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: shutup-deploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: shutup-deploy
+    spec:
+      containers:
+      - image: docker.io/ammoniaflows/cogrepo:cogdemo
+        name: cogrepo
+        ports:
+        - containerPort: 5000 (without this, k8s will not be able to deploy this app as it doesnt know what port it is. It will give a "connection refused error")
